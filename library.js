@@ -17,7 +17,11 @@ function addBookToLibrary() {
     if ( author == "" || title == "" ) {
         return false;
     }
-    let myBook = new Book( author, title, readStatus, "default.jpg", "unknown" );
+    let deleteId = 0;
+    for ( let book of myLibrary ) {
+        deleteId++;
+    }
+    let myBook = new Book( author, title, readStatus, "default.jpg", deleteId );
     myLibrary.push( myBook );
     render( title );
     getAnImage( title );
@@ -38,6 +42,7 @@ function render( title ) {
         let title = "";
         let readStatus = "";
         let src = "";
+        let deleteId = 0;
         for ( let key in book ) {
             if ( key == "author" ) {
                 author = book[key];
@@ -52,10 +57,10 @@ function render( title ) {
                 src = book[key];
             }
             if ( key == "deleteId" ) {
-                deleteId = i;
+                deleteId = book[key];
             }
-            i++
         }
+
         /* create book element */
         let newBookElement = libraryElement.appendChild(document.createElement("div"));
             newBookElement.className = "book-wrapper";
