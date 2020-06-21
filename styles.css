@@ -1,0 +1,72 @@
+.book-wrapper {
+    width: 784px;
+    height: 247px;
+    position: relative;
+    background-color: #867878;
+    border-radius: 21px;
+    margin-top: 13px;
+}
+
+.book {
+    height: 215px;
+    width: 220px;
+    float: left;
+    margin: 16px;
+    border-radius: 15px;
+}
+
+.book-info {
+    float: left;
+    text-align: left;
+    margin-top: 45px;
+    margin-left: 22px;
+    font-size: 26px;
+    overflow: hidden;
+    line-height: 40px;
+}
+
+#myLibrary {
+    position: relative;
+    margin-top: 5px;
+    padding: 4px 0px 19px 30px;
+    background-color: #7613b0;
+    border-radius: 15px;
+    width: 815px
+}
+
+.form-wrapper {
+    margin-left: 94px;
+    margin-top: -19px;
+    padding: 0px 0px 10px 0px;
+}
+
+.form-text {
+    float: left;
+    margin-block-start: 0;
+    margin-block-end: 0;
+    margin-inline-start: 0px;
+    margin-inline-end: 0;
+    padding: 2px 14px 0px 0px;
+}
+
+input[type="text"] {
+    width: 190px;
+    height: 30px;
+    padding: 0;
+    color: black;
+    border: 2px solid #7613b0;
+    background-color: white;
+}
+
+input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+}
+
+.welcome-wrapper {
+    margin: 9px 0px 0px 153px;
+}
+
+.welcome-text {
+    font-size: 42px;
+}
