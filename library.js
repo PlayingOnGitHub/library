@@ -97,7 +97,7 @@ addBookButton.addEventListener("click", addBookToLibrary, true );
 function getAnImage( title ) {
     /* I copied a stack exchange method that allowed me to fetch source code from URL */
     let proxyurl = "https://cors-anywhere.herokuapp.com/";
-    let url = "https://unsplash.com/s/photos/" + title;
+    let url = "https://www.bookshare.org/search?keyword=" + title;
     let newcontents = "";
     let failed = false;
     let returnedUrl = "";
@@ -105,19 +105,20 @@ function getAnImage( title ) {
     .then(response => response.text())
     .then(contents => { 
         newcontents = contents;
-    } )
-    .catch(() => console.log("Can’t access " + url + " response. Blocked by browser?"))
+    } );
     /* The part below this is mine */
     setTimeout( () => {
-        let regex = "class=\"_2VWD4 _2zEKz\" alt=\".+?" + title + ".+?srcSet=\"https:\\/\\/images.unsplash.com\\/photo-[\\d]+?-[\\da-z].+?\\?";
+        let regex = "cover-image-search\" src=\".*?\"";
         regex = new RegExp( regex, "mgi" );
         let aMatch = newcontents.match(regex);
         if (aMatch) {
-            let myString = aMatch[0];
-            let split = myString.split("srcSet=");
-            let myArray = [split[1]]
-            let myUrl = myArray[0].slice(1, myArray[0].length-1)
-            returnedUrl = myUrl.split(";")[0];
+            aMatch = aMatch[0];
+            aMatch = aMatch.split("src=\"");
+            aMatch = aMatch[1];
+            console.log(aMatch);
+            aMatch = aMatch.split("");
+            aMatch.pop();
+            let returnedUrl = aMatch.join("");
             let i = 0;
             for ( let book of myLibrary ) {
                 for ( let key in book ) {
