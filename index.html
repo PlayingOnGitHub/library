@@ -5,26 +5,25 @@
         <link rel="stylesheet" href="styles.css">
     </head>
     <body>
-        <!--<form name="addBook">-->
+        <div class="page-wrapper">
             <div class="welcome-wrapper">
                 <p class="welcome-text">Welcome to Joey's Library!</p>
             </div>
-        <div class="form-wrapper">
-            <label>
-                Author: <input type="text" id="author">
-            </label>
-            <label>
-                Title: <input type="text" id="title">
-            </label>
-            <label>
-                Read? <input type="checkbox" id="readStatus" unchecked>
-            </label>
-            <button type="button" id="addBookToLibrary">Add Book</button>
+            <div class="form-wrapper">
+                <label>
+                    Author: <input type="text" id="author">
+                </label>
+                <label>
+                    Title: <input type="text" id="title">
+                </label>
+                <label>
+                    Read? <input type="checkbox" id="readStatus" unchecked>
+                </label>
+                <button type="button" id="addBookToLibrary">Add Book</button>
+            </div>
+            <div id="myLibrary">
+            </div>
         </div>
-        <!--</form>-->
-        <div id="myLibrary">
-            
-        </div>
-        <script src="library.js"></script>
     </body>
+    <script src="library.js"></script>
 </html>

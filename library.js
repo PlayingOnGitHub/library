@@ -1,13 +1,13 @@
 let myLibrary = [];
 
-function Book( author, title, readStatus, src, deleteId ) {
+function Book( author, title, readStatus, src, currentId, ) {
     // the constructor...
     // give the book properties of author, title, number of pages, whether it’s been read.
     this.author = author;
     this.title = title;
     this.readStatus = readStatus;
     this.src = src;
-    this.deleteId = deleteId;
+    this.currentId = currentId;
 }
 
 function addBookToLibrary() {
@@ -17,13 +17,23 @@ function addBookToLibrary() {
     if ( author == "" || title == "" ) {
         return false;
     }
-    let deleteId = 0;
-    for ( let book of myLibrary ) {
-        deleteId++;
+
+    let currentId = 0;
+    if ( myLibrary.length != 0 ) {
+        currentId = +myLibrary[myLibrary.length-1]["currentId"];
+        currentId++;
     }
-    let myBook = new Book( author, title, readStatus, "default.jpg", deleteId );
+
+
+    if ( readStatus ) {
+        readStatus = "Yes";
+    }
+    else {
+        readStatus = "No";
+    }
+    let myBook = new Book( author, title, readStatus, "default.jpg", currentId );
     myLibrary.push( myBook );
-    render( title );
+    render();
     getAnImage( title );
 
     // get information like author, title, number of pages, and whether it's been read
@@ -31,10 +41,26 @@ function addBookToLibrary() {
     // Now, add the book object to the myLibrary array
 }
 
-function render( title ) {
+function deleteMyButton() {
+    let i = 0;
+    breakOutOfIt:
+    for ( let book of myLibrary ) {
+        for ( let key in book ) {
+            if ( key == "currentId" && book[key] == this.id ) {
+                delete myLibrary[i];
+                break breakOutOfIt;
+            }
+        }
+        i++;
+    }
+    myLibrary = myLibrary.filter( (x) => (x != undefined) ? true : false );
+    render();
+}
+
+function render() {
     let libraryElement = document.getElementById("myLibrary");
     libraryElement.remove();
-    libraryElement = document.getElementsByTagName("body")[0].appendChild(document.createElement("div"));
+    libraryElement = document.getElementsByClassName("page-wrapper")[0].appendChild(document.createElement("div"));
     libraryElement.id = "myLibrary";
     let i = 0;
     for ( let book of myLibrary ) {
@@ -42,7 +68,7 @@ function render( title ) {
         let title = "";
         let readStatus = "";
         let src = "";
-        let deleteId = 0;
+        let currentId = 0;
         for ( let key in book ) {
             if ( key == "author" ) {
                 author = book[key];
@@ -56,8 +82,11 @@ function render( title ) {
             if ( key == "src" ) {
                 src = book[key];
             }
-            if ( key == "deleteId" ) {
-                deleteId = book[key];
+            if ( key == "currentId" ) {
+                currentId = book[key];
+            }
+            if ( key == "readStatus" ) {
+                readStatus = book[key];
             }
         }
 
@@ -70,22 +99,32 @@ function render( title ) {
         let bookInfo = newBookElement.appendChild(document.createElement("p"));
         bookInfo.className = "book-info";
 
-        if ( readStatus ) {
-            readStatus = "yes";
-        }
-        else {
-            readStatus = "no";
-        }
-        let informationString = "Title: " + title + "<br>Author: " + author + "<br><br>Read it? " + readStatus;
+        let informationString = "Title: " + title + "<br>Author: " + author + "<br><br>Read it? ";
         bookInfo.innerHTML = informationString;
-        let deleteButton = newBookElement.appendChild( document.createElement("button"))
-        deleteButton.id = deleteId;
-        deleteButton.addEventListener( "click", () => {
-            myLibrary[deleteId] = undefined;
-            newBookElement.remove();
-            myLibrary = myLibrary.filter( (x) => (x != undefined) ? true : false );
-        }, true )
-        /* add author, title, pages, status, and image to page */
+
+        /* read button */
+        let readButton = newBookElement.appendChild( document.createElement("button"));
+        readButton.className = "read-button";
+        readButton.innerText = readStatus;
+        readButton.addEventListener( "click", () => {
+            if ( readStatus == "Yes" ) {
+                readStatus == "No";
+                book["readStatus"] = "No";
+            }
+            else {
+                readStatus = "Yes";
+                book["readStatus"] = "Yes";
+            }
+            render();
+
+        }, true );
+
+        /* delete button */
+        let deleteButton = newBookElement.appendChild( document.createElement("button"));
+        deleteButton.className = "delete-button";
+        deleteButton.id = currentId;
+        deleteButton.addEventListener( "click", deleteMyButton, true );
+
         console.log( author + " " + title + " " + status + " " + src );
 
     }
@@ -129,8 +168,10 @@ function getAnImage( title ) {
                 for ( let key in book ) {
                     if ( book[key] == title ) {
                         let currentBookElement = document.getElementsByClassName("book")[i];
-                        currentBookElement.src = returnedUrl;
-                        book.src = returnedUrl;
+                        if ( currentBookElement ) {
+                            currentBookElement.src = returnedUrl;
+                            book.src = returnedUrl;
+                        }
                     }
                 }
                 i++;
