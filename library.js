@@ -14,6 +14,9 @@ function addBookToLibrary() {
     let author = document.getElementById("author").value;
     let title = document.getElementById("title").value
     let readStatus = document.getElementById("readStatus").checked;
+    document.getElementById("author").value = "";
+    document.getElementById("title").value = "";
+    document.getElementById("readStatus").checked = false;
     if ( author == "" || title == "" ) {
         return false;
     }
