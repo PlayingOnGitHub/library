@@ -123,6 +123,7 @@ function render() {
         let deleteButton = newBookElement.appendChild( document.createElement("button"));
         deleteButton.className = "delete-button";
         deleteButton.id = currentId;
+        deleteButton.innerText = "X";
         deleteButton.addEventListener( "click", deleteMyButton, true );
 
         console.log( author + " " + title + " " + status + " " + src );
