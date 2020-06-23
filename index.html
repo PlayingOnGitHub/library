@@ -2,6 +2,8 @@
     <head>
         <meta charset="UTF-8">
         <title>Library</title>
+        <script src="https://www.gstatic.com/firebasejs/7.15.4/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.15.4/firebase-firestore.js"></script>
         <link rel="stylesheet" href="styles.css">
     </head>
     <body>
@@ -24,6 +26,26 @@
             <div id="myLibrary">
             </div>
         </div>
+
+
+
+
+        <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyBh1QXXEZiZG-AfKJWP95mcEr-j5zKq6t0",
+            authDomain: "library-b85fc.firebaseapp.com",
+            databaseURL: "https://library-b85fc.firebaseio.com",
+            projectId: "library-b85fc",
+            storageBucket: "library-b85fc.appspot.com",
+            messagingSenderId: "552243679053",
+            appId: "1:552243679053:web:430003d04f54e20d537104",
+            measurementId: "G-XCZKEEDKRJ"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        </script>
+        <script src="library.js"></script>
     </body>
-    <script src="library.js"></script>
 </html>

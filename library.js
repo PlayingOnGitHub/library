@@ -10,6 +10,10 @@ function Book( author, title, readStatus, src, currentId, ) {
     this.currentId = currentId;
 }
 
+Book.prototype.addToDatabase = function( doc ) {
+    console.log(this);
+}
+
 function addBookToLibrary() {
     let author = document.getElementById("author").value;
     let title = document.getElementById("title").value
