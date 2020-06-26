@@ -22,10 +22,11 @@ function addBookToDatabase( book ) {
 
 function updateBookContentToDatabase( book, theUpdate, typeOfChange ) { /* book | returnedUrl or readStatus | typeOfChange -> readStatus or image */
     if ( typeOfChange == "image" ) {
-        /* make updates to database */
+        /* push update to database */
+        /* theUpdate = returnedUrl */
     }
     else if ( typeOfChange == "readStatus" ) {
-        /* make updates to database */
+        /* push update to database */
     }
 }
 
@@ -47,12 +48,12 @@ function addBookToLibrary() {
         }
     let myBook = new Book( author, title, readStatus, "default.jpg" );
     addToDatabase( myBook );
-    getAnImage( title );  /*.then( () => render() ); /* see if this renders... otherwise, just put render in getAnImage() function */
-    /* get an Image also renders at the end */
-
+    getAnImage( title );
 }
 
 function getAnImage( title ) {
+    /* book = ? */
+    let book = 0;
     /* updates library locally and then re-renders using everything using render() function */
     let proxyurl = "https://cors-anywhere.herokuapp.com/";
     let url = "https://www.bookshare.org/search?keyword=" + title;
@@ -72,11 +73,11 @@ function getAnImage( title ) {
             aMatch = aMatch.split("");
             aMatch.pop();
             let returnedUrl = aMatch.join("");
-            updateToDatabase( returnedUrl, "image" )
+            updateToDatabase( book, returnedUrl, "image" )
         }
         else {
             returnedUrl = "default.jpg"
-            updateToDatabase( "default.jpg", "image" )
+            updateToDatabase( book, returnedUrl, "image" )
         }
     } );
 }
@@ -122,14 +123,14 @@ function render( snapshot ) {
         let readButton = newBookElement.appendChild( document.createElement("button"));
         readButton.className = "read-button";
         readButton.innerText = readStatus;
-        readButton.addEventListener( "click", (book) => updateToDatabase( book, "NA", "readStatus" ), true );
+        readButton.addEventListener( "click", () => updateBookContentToDatabase( book, this.checked, "readStatus" ), true ); /* might not work this.checked */
         /* delete button */
         let deleteButton = newBookElement.appendChild( document.createElement("button"));
         deleteButton.className = "delete-button";
         /* delete button's id must match document in database current Id */
         deleteButton.id = book.id;
         deleteButton.innerText = "X";
-        deleteButton.addEventListener( "click", deleteFromDatabase, true );
+        deleteButton.addEventListener( "click", deleteBookFromDatabase, true );
     });
 }
 
