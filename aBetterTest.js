@@ -34,7 +34,7 @@ Book.prototype.getDatabaseUpdates = function( snapshot ) {
     } );
 }
 
-Book.prototype.updateToDatabase = function ( book, returnedUrl, typeOfChange ) { /* book | returnedUrl or "Yes"or"No" | typeOfChange -> readStatus or image */
+Book.prototype.updateToDatabase = function ( book, theUpdate, typeOfChange ) { /* book | returnedUrl or readStatus | typeOfChange -> readStatus or image */
     if ( typeOfChange == "image" ) {
         /* make updates to database */
     }
@@ -65,20 +65,6 @@ function addBookToLibrary() {
     addToDatabase( myBook );
     getAnImage( title );  /*.then( () => render() ); /* see if this renders... otherwise, just put render in getAnImage() function */
 
-}
-
-function changeReadStatus( book ) {
-    let docId = book.id;
-
-    /*if ( readStatus == "Yes" ) {
-        readStatus == "No";
-        book["readStatus"] = "No";
-    }
-    else {
-        readStatus = "Yes";
-        book["readStatus"] = "Yes";
-    }*/
-    /*render(); */
 }
 
 function render() {
@@ -126,7 +112,7 @@ function render() {
         let readButton = newBookElement.appendChild( document.createElement("button"));
         readButton.className = "read-button";
         readButton.innerText = readStatus;
-        readButton.addEventListener( "click", changeReadStatus, true );
+        readButton.addEventListener( "click", (book) => updateToDatabase(book, ), true );
 
         /* delete button */
         let deleteButton = newBookElement.appendChild( document.createElement("button"));
