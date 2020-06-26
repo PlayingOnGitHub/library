@@ -10,18 +10,30 @@ function Book( author, title, readStatus, src, currentId, ) {
     this.currentId = currentId;
 }
 
-Book.prototype.addBookToDatabase = function( doc ) {
-    console.log(this);
+function getDatabaseUpdates( snapshot ) {
+    /* render will call this */
+    myLibrary = [];
+    let i = 0;
+    snapshot.forEach( (book) => {
+        myLibrary.push(book.data());
+    } );
 }
 
-Book.prototype.deleteBookFromDatabase = function( documentId ) {
-    /* documentId will be the element. I can get the data-attribute tag from documentId or from "this" possibly */
-    /* find database-document that has an id equal to documentId */
-    /* deleteFromDatabase( documentId ); */
-    /* render(); */
+function deleteBookFromDatabase( documentId ) {
+    /* id will somehow have to equal data-attribute tag from documentId or from "this" possibly */
+    db.collection('books').doc("id").delete()
+        .then( () => {
+            render();
+        })
+        .catch( (error) => console.log(error) );
 }
 
-Book.prototype.updateBookContentToDatabase = function ( book, theUpdate, typeOfChange ) { /* book | returnedUrl or readStatus | typeOfChange -> readStatus or image */
+function addBookToDatabase( book ) {
+    // add book to database
+    db.collection('books').add(book);
+}
+
+function updateBookContentToDatabase( book, theUpdate, typeOfChange ) { /* book | returnedUrl or readStatus | typeOfChange -> readStatus or image */
     if ( typeOfChange == "image" ) {
         /* make updates to database */
     }
@@ -29,19 +41,6 @@ Book.prototype.updateBookContentToDatabase = function ( book, theUpdate, typeOfC
         /* make updates to database */
     }
     render();
-}
-
-Book.prototype.getDatabaseUpdates = function( snapshot ) {
-    /* render will call this */
-    myLibrary = [];
-    let i = 0;
-    snapshot.forEach( (book) => {
-        /* update library[] with book objects */
-        myLibrary.push(book.data());
-        let responseText = "Updated " + i + " times";
-        console.log(responseText);
-        i++;
-    } );
 }
 
 function addBookToLibrary() {
@@ -159,6 +158,10 @@ function render() {
     /* Use a for in loop to go over items in array and console.log each one */
     
 }
+
+db.collection('books').onSnapshot( (snapshot) => {
+    getDatabaseUpdates(snapshot);
+})
 
 let addBookButton = document.getElementById("addBookToLibrary");
 addBookButton.addEventListener("click", addBookToLibrary, true );
