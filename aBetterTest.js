@@ -34,6 +34,16 @@ Book.prototype.getDatabaseUpdates = function( snapshot ) {
     } );
 }
 
+Book.prototype.updateToDatabase = function ( book, returnedUrl, typeOfChange ) { /* book | returnedUrl or "Yes"or"No" | typeOfChange -> readStatus or image */
+    if ( typeOfChange == "image" ) {
+        /* make updates to database */
+    }
+    else if ( typeOfChange == "readStatus" ) {
+        /* make updates to database */
+    }
+    render();
+}
+
 function addBookToLibrary() {
     let author = document.getElementById("author").value;
     let title = document.getElementById("title").value
@@ -54,7 +64,7 @@ function addBookToLibrary() {
     myLibrary.push( myBook );
     addToDatabase( myBook );
     getAnImage( title );  /*.then( () => render() ); /* see if this renders... otherwise, just put render in getAnImage() function */
-    render();
+
 }
 
 function changeReadStatus( book ) {
@@ -77,7 +87,7 @@ function render() {
     libraryElement = document.getElementsByClassName("page-wrapper")[0].appendChild(document.createElement("div"));
     libraryElement.id = "myLibrary";
     let i = 0;
-    for ( let book of myLibrary ) {
+    for ( let book of myLibrary ) { /* should I change this loop to reflect more data for database Id? */
         let author = "";
         let title = "";
         let readStatus = "";
@@ -121,11 +131,10 @@ function render() {
         /* delete button */
         let deleteButton = newBookElement.appendChild( document.createElement("button"));
         deleteButton.className = "delete-button";
+        /* delete button's id must match document in database current Id */
         deleteButton.id = currentId;
         deleteButton.innerText = "X";
         deleteButton.addEventListener( "click", deleteFromDatabase, true );
-
-        console.log( author + " " + title + " " + status + " " + src );
 
     }
     // loop through myLibrary array and display each object's contents on the page.
@@ -155,10 +164,11 @@ function getAnImage( title ) {
             aMatch = aMatch.split("");
             aMatch.pop();
             let returnedUrl = aMatch.join("");
-            /* update current book's url in database with "returnedUrl" variable */
+            updateToDatabase( returnedUrl, "image" )
         }
         else {
-            /* update current book's url in database with "default.jpg" */
+            returnedUrl = "default.jpg"
+            updateToDatabase( "default.jpg", "image" )
         }
         render();
     } );
