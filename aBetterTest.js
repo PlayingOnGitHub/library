@@ -10,15 +10,25 @@ function Book( author, title, readStatus, src, currentId, ) {
     this.currentId = currentId;
 }
 
-Book.prototype.addToDatabase = function( doc ) {
+Book.prototype.addBookToDatabase = function( doc ) {
     console.log(this);
 }
 
-Book.prototype.deleteFromDatabase = function( documentId ) {
+Book.prototype.deleteBookFromDatabase = function( documentId ) {
     /* documentId will be the element. I can get the data-attribute tag from documentId or from "this" possibly */
     /* find database-document that has an id equal to documentId */
     /* deleteFromDatabase( documentId ); */
     /* render(); */
+}
+
+Book.prototype.updateBookContentToDatabase = function ( book, theUpdate, typeOfChange ) { /* book | returnedUrl or readStatus | typeOfChange -> readStatus or image */
+    if ( typeOfChange == "image" ) {
+        /* make updates to database */
+    }
+    else if ( typeOfChange == "readStatus" ) {
+        /* make updates to database */
+    }
+    render();
 }
 
 Book.prototype.getDatabaseUpdates = function( snapshot ) {
@@ -32,16 +42,6 @@ Book.prototype.getDatabaseUpdates = function( snapshot ) {
         console.log(responseText);
         i++;
     } );
-}
-
-Book.prototype.updateToDatabase = function ( book, theUpdate, typeOfChange ) { /* book | returnedUrl or readStatus | typeOfChange -> readStatus or image */
-    if ( typeOfChange == "image" ) {
-        /* make updates to database */
-    }
-    else if ( typeOfChange == "readStatus" ) {
-        /* make updates to database */
-    }
-    render();
 }
 
 function addBookToLibrary() {
@@ -61,10 +61,40 @@ function addBookToLibrary() {
             readStatus = "No";
         }
     let myBook = new Book( author, title, readStatus, "default.jpg" );
-    myLibrary.push( myBook );
     addToDatabase( myBook );
     getAnImage( title );  /*.then( () => render() ); /* see if this renders... otherwise, just put render in getAnImage() function */
+    /* get an Image also renders at the end */
 
+}
+
+function getAnImage( title ) {
+    /* updates library locally and then re-renders using everything using render() function */
+    let proxyurl = "https://cors-anywhere.herokuapp.com/";
+    let url = "https://www.bookshare.org/search?keyword=" + title;
+    let failed = false;
+    let returnedUrl = "";
+    fetch(proxyurl + url)
+    .then(response => response.text())
+    .then(contents => { 
+        let regex = "cover-image-search\" src=\".*?\"";
+        regex = new RegExp( regex, "mgi" );
+        let aMatch = contents.match(regex);
+        if (aMatch) {
+            aMatch = aMatch[0];
+            aMatch = aMatch.split("src=\"");
+            aMatch = aMatch[1];
+            console.log(aMatch);
+            aMatch = aMatch.split("");
+            aMatch.pop();
+            let returnedUrl = aMatch.join("");
+            updateToDatabase( returnedUrl, "image" )
+        }
+        else {
+            returnedUrl = "default.jpg"
+            updateToDatabase( "default.jpg", "image" )
+        }
+        render();
+    } );
 }
 
 function render() {
@@ -112,7 +142,7 @@ function render() {
         let readButton = newBookElement.appendChild( document.createElement("button"));
         readButton.className = "read-button";
         readButton.innerText = readStatus;
-        readButton.addEventListener( "click", (book) => updateToDatabase(book, ), true );
+        readButton.addEventListener( "click", (book) => updateToDatabase( book, "NA", "readStatus" ), true );
 
         /* delete button */
         let deleteButton = newBookElement.appendChild( document.createElement("button"));
@@ -128,36 +158,6 @@ function render() {
        list.. as render is what displays the books as output */
     /* Use a for in loop to go over items in array and console.log each one */
     
-}
-
-function getAnImage( title ) {
-    /* updates library locally and then re-renders using everything using render() function */
-    let proxyurl = "https://cors-anywhere.herokuapp.com/";
-    let url = "https://www.bookshare.org/search?keyword=" + title;
-    let failed = false;
-    let returnedUrl = "";
-    fetch(proxyurl + url)
-    .then(response => response.text())
-    .then(contents => { 
-        let regex = "cover-image-search\" src=\".*?\"";
-        regex = new RegExp( regex, "mgi" );
-        let aMatch = contents.match(regex);
-        if (aMatch) {
-            aMatch = aMatch[0];
-            aMatch = aMatch.split("src=\"");
-            aMatch = aMatch[1];
-            console.log(aMatch);
-            aMatch = aMatch.split("");
-            aMatch.pop();
-            let returnedUrl = aMatch.join("");
-            updateToDatabase( returnedUrl, "image" )
-        }
-        else {
-            returnedUrl = "default.jpg"
-            updateToDatabase( "default.jpg", "image" )
-        }
-        render();
-    } );
 }
 
 let addBookButton = document.getElementById("addBookToLibrary");
