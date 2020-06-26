@@ -1,5 +1,3 @@
-let myLibrary = [];
-
 function Book( author, title, readStatus, src, currentId, ) {
     // the constructor...
     // give the book properties of author, title, number of pages, whether it’s been read.
@@ -10,21 +8,10 @@ function Book( author, title, readStatus, src, currentId, ) {
     this.currentId = currentId;
 }
 
-function getDatabaseUpdates( snapshot ) {
-    /* render will call this */
-    myLibrary = [];
-    let i = 0;
-    snapshot.forEach( (book) => {
-        myLibrary.push(book.data());
-    } );
-}
-
-function deleteBookFromDatabase( documentId ) {
+/* this is next step. Need to add pull Ids from database and add a document id tag */
+function deleteBookFromDatabase() {
     /* id will somehow have to equal data-attribute tag from documentId or from "this" possibly */
-    db.collection('books').doc("id").delete()
-        .then( () => {
-            render();
-        })
+    db.collection('books').doc(this.id).delete()
         .catch( (error) => console.log(error) );
 }
 
@@ -40,7 +27,6 @@ function updateBookContentToDatabase( book, theUpdate, typeOfChange ) { /* book 
     else if ( typeOfChange == "readStatus" ) {
         /* make updates to database */
     }
-    render();
 }
 
 function addBookToLibrary() {
@@ -92,22 +78,19 @@ function getAnImage( title ) {
             returnedUrl = "default.jpg"
             updateToDatabase( "default.jpg", "image" )
         }
-        render();
     } );
 }
 
-function render() {
+function render( snapshot ) {
     let libraryElement = document.getElementById("myLibrary");
     libraryElement.remove();
     libraryElement = document.getElementsByClassName("page-wrapper")[0].appendChild(document.createElement("div"));
     libraryElement.id = "myLibrary";
-    let i = 0;
-    for ( let book of myLibrary ) { /* should I change this loop to reflect more data for database Id? */
+    snapshot.forEach( ( book ) => {
         let author = "";
         let title = "";
         let readStatus = "";
         let src = "";
-        let currentId = 0;
         for ( let key in book ) {
             if ( key == "author" ) {
                 author = book[key];
@@ -133,34 +116,25 @@ function render() {
         newBookImage.src = src;
         let bookInfo = newBookElement.appendChild(document.createElement("p"));
         bookInfo.className = "book-info";
-
         let informationString = "Title: " + title + "<br>Author: " + author + "<br><br>Read it? ";
         bookInfo.innerHTML = informationString;
-
         /* read button */
         let readButton = newBookElement.appendChild( document.createElement("button"));
         readButton.className = "read-button";
         readButton.innerText = readStatus;
         readButton.addEventListener( "click", (book) => updateToDatabase( book, "NA", "readStatus" ), true );
-
         /* delete button */
         let deleteButton = newBookElement.appendChild( document.createElement("button"));
         deleteButton.className = "delete-button";
         /* delete button's id must match document in database current Id */
-        deleteButton.id = currentId;
+        deleteButton.id = book.id;
         deleteButton.innerText = "X";
         deleteButton.addEventListener( "click", deleteFromDatabase, true );
-
-    }
-    // loop through myLibrary array and display each object's contents on the page.
-    /* This will run each time after addBookToLibrary is called. This is done to update the book
-       list.. as render is what displays the books as output */
-    /* Use a for in loop to go over items in array and console.log each one */
-    
+    });
 }
 
 db.collection('books').onSnapshot( (snapshot) => {
-    getDatabaseUpdates(snapshot);
+    render(snapshot);
 })
 
 let addBookButton = document.getElementById("addBookToLibrary");
