@@ -14,6 +14,26 @@ Book.prototype.addToDatabase = function( doc ) {
     console.log(this);
 }
 
+Book.prototype.deleteFromDatabase = function( documentId ) {
+    /* documentId will be the element. I can get the data-attribute tag from documentId or from "this" possibly */
+    /* find database-document that has an id equal to documentId */
+    /* deleteFromDatabase( documentId ); */
+    /* render(); */
+}
+
+Book.prototype.getDatabaseUpdates = function( snapshot ) {
+    /* render will call this */
+    myLibrary = [];
+    let i = 0;
+    snapshot.forEach( (book) => {
+        /* update library[] with book objects */
+        myLibrary.push(book.data());
+        let responseText = "Updated " + i + " times";
+        console.log(responseText);
+        i++;
+    } );
+}
+
 function addBookToLibrary() {
     let author = document.getElementById("author").value;
     let title = document.getElementById("title").value
@@ -21,47 +41,34 @@ function addBookToLibrary() {
     document.getElementById("author").value = "";
     document.getElementById("title").value = "";
     document.getElementById("readStatus").checked = false;
-    if ( author == "" || title == "" ) {
-        return false;
-    }
-
-    let currentId = 0;
-    if ( myLibrary.length != 0 ) {
-        currentId = +myLibrary[myLibrary.length-1]["currentId"];
-        currentId++;
-    }
-
-
-    if ( readStatus ) {
-        readStatus = "Yes";
-    }
-    else {
-        readStatus = "No";
-    }
-    let myBook = new Book( author, title, readStatus, "default.jpg", currentId );
+        if ( author == "" || title == "" ) {
+            return false;
+        }
+        if ( readStatus ) {
+            readStatus = "Yes";
+        }
+        else {
+            readStatus = "No";
+        }
+    let myBook = new Book( author, title, readStatus, "default.jpg" );
     myLibrary.push( myBook );
+    addToDatabase( myBook );
+    getAnImage( title );  /*.then( () => render() ); /* see if this renders... otherwise, just put render in getAnImage() function */
     render();
-    getAnImage( title );
-
-    // get information like author, title, number of pages, and whether it's been read
-    // and create a new Book object using the constructor and information given
-    // Now, add the book object to the myLibrary array
 }
 
-function deleteMyButton() {
-    let i = 0;
-    breakOutOfIt:
-    for ( let book of myLibrary ) {
-        for ( let key in book ) {
-            if ( key == "currentId" && book[key] == this.id ) {
-                delete myLibrary[i];
-                break breakOutOfIt;
-            }
-        }
-        i++;
+function changeReadStatus( book ) {
+    let docId = book.id;
+
+    /*if ( readStatus == "Yes" ) {
+        readStatus == "No";
+        book["readStatus"] = "No";
     }
-    myLibrary = myLibrary.filter( (x) => (x != undefined) ? true : false );
-    render();
+    else {
+        readStatus = "Yes";
+        book["readStatus"] = "Yes";
+    }*/
+    /*render(); */
 }
 
 function render() {
@@ -89,14 +96,10 @@ function render() {
             if ( key == "src" ) {
                 src = book[key];
             }
-            if ( key == "currentId" ) {
-                currentId = book[key];
-            }
             if ( key == "readStatus" ) {
                 readStatus = book[key];
             }
         }
-
         /* create book element */
         let newBookElement = libraryElement.appendChild(document.createElement("div"));
             newBookElement.className = "book-wrapper";
@@ -113,25 +116,14 @@ function render() {
         let readButton = newBookElement.appendChild( document.createElement("button"));
         readButton.className = "read-button";
         readButton.innerText = readStatus;
-        readButton.addEventListener( "click", () => {
-            if ( readStatus == "Yes" ) {
-                readStatus == "No";
-                book["readStatus"] = "No";
-            }
-            else {
-                readStatus = "Yes";
-                book["readStatus"] = "Yes";
-            }
-            render();
-
-        }, true );
+        readButton.addEventListener( "click", changeReadStatus, true );
 
         /* delete button */
         let deleteButton = newBookElement.appendChild( document.createElement("button"));
         deleteButton.className = "delete-button";
         deleteButton.id = currentId;
         deleteButton.innerText = "X";
-        deleteButton.addEventListener( "click", deleteMyButton, true );
+        deleteButton.addEventListener( "click", deleteFromDatabase, true );
 
         console.log( author + " " + title + " " + status + " " + src );
 
@@ -143,11 +135,8 @@ function render() {
     
 }
 
-let addBookButton = document.getElementById("addBookToLibrary");
-addBookButton.addEventListener("click", addBookToLibrary, true );
-
 function getAnImage( title ) {
-    /* I copied a stack exchange method that allowed me to fetch source code from URL */
+    /* updates library locally and then re-renders using everything using render() function */
     let proxyurl = "https://cors-anywhere.herokuapp.com/";
     let url = "https://www.bookshare.org/search?keyword=" + title;
     let failed = false;
@@ -166,33 +155,14 @@ function getAnImage( title ) {
             aMatch = aMatch.split("");
             aMatch.pop();
             let returnedUrl = aMatch.join("");
-            let i = 0;
-            for ( let book of myLibrary ) {
-                for ( let key in book ) {
-                    if ( book[key] == title ) {
-                        let currentBookElement = document.getElementsByClassName("book")[i];
-                        if ( currentBookElement ) {
-                            currentBookElement.src = returnedUrl;
-                            book.src = returnedUrl;
-                        }
-                    }
-                }
-                i++;
-            }
+            /* update current book's url in database with "returnedUrl" variable */
         }
         else {
-            let o = 0;
-            for ( let book of myLibrary ) {
-                for ( let key in book ) {
-                    if ( book[key] == title ) {
-                        let currentBookElement = document.getElementsByClassName("book")[o];
-                        currentBookElement.src = "default.jpg";
-                        book.src = "default.jpg";
-                    }
-                }
-                o++;
-            }
+            /* update current book's url in database with "default.jpg" */
         }
-        /* update book src contents for the correct book item */
+        render();
     } );
 }
+
+let addBookButton = document.getElementById("addBookToLibrary");
+addBookButton.addEventListener("click", addBookToLibrary, true );
