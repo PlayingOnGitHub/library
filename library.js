@@ -36,21 +36,29 @@ function addBookToDatabase( book ) {
         .catch( (error) => console.log( error ) );
 }
 
-function updateBookContentToDatabase( bookId, theUpdate, typeOfChange ) { /* book | returnedUrl or readStatus | typeOfChange -> readStatus or image */
+function updateBookContentToDatabase( book, theUpdate, typeOfChange ) { /* book | returnedUrl or readStatus | typeOfChange -> readStatus or image */
     if ( typeOfChange == "image" ) {
         /* push update to database */
         /* theUpdate = returnedUrl */
+        db.collection('books').doc(book.id).update( { src: theUpdate } );
         console.log("change of image");
     }
     else if ( typeOfChange == "readStatus" ) {
-        /* push update to database */
-        console.log("change of read status");
+        let currentStatus = "";
+        if ( theUpdate == "Yes" ) {
+            currentStatus = "No";
+        }
+        if ( theUpdate == "No" ) {
+            currentStatus = "Yes";
+        }
+        db.collection('books').doc(book.id).update( { readStatus: currentStatus } );
+        console.log(currentStatus);
     }
 }
 
 function getAnImage( book ) {
     /* book = ? */
-    let title = book.title;
+    let title = book.data().title;
     /* updates library locally and then re-renders using everything using render() function */
     let proxyurl = "https://cors-anywhere.herokuapp.com/";
     let url = "https://www.bookshare.org/search?keyword=" + title;
@@ -70,11 +78,11 @@ function getAnImage( book ) {
             aMatch = aMatch.split("");
             aMatch.pop();
             let returnedUrl = aMatch.join("");
-            updateBookContentToDatabase( book.id, returnedUrl, "image" )
+            updateBookContentToDatabase( book, returnedUrl, "image" )
         }
         else {
             returnedUrl = "default.jpg"
-            updateBookContentToDatabase( book.id, returnedUrl, "image" )
+            updateBookContentToDatabase( book, returnedUrl, "image" )
         }
     } );
 }
@@ -92,7 +100,7 @@ function render( snapshot ) {
         let src = bookData.src;
         if ( src == "none" ) {
             src = "default.jpg";
-            getAnImage( bookData );
+            getAnImage( book );
         }
         /* create book element */
         let newBookElement = libraryElement.appendChild(document.createElement("div"));
@@ -108,7 +116,7 @@ function render( snapshot ) {
         let readButton = newBookElement.appendChild( document.createElement("button"));
         readButton.className = "read-button";
         readButton.innerText = readStatus;
-        readButton.addEventListener( "click", () => updateBookContentToDatabase( book, this.checked, "readStatus" ), true ); /* might not work this.checked */
+        readButton.addEventListener( "click", (e) => {updateBookContentToDatabase( book, e.target.innerText, "readStatus" ), true} ); /* might not work this.checked */
         /* delete button */
         let deleteButton = newBookElement.appendChild( document.createElement("button"));
         deleteButton.className = "delete-button";
