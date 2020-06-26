@@ -41,7 +41,6 @@ function updateBookContentToDatabase( book, theUpdate, typeOfChange ) { /* book 
         /* push update to database */
         /* theUpdate = returnedUrl */
         db.collection('books').doc(book.id).update( { src: theUpdate } );
-        console.log("change of image");
     }
     else if ( typeOfChange == "readStatus" ) {
         let currentStatus = "";
@@ -52,7 +51,6 @@ function updateBookContentToDatabase( book, theUpdate, typeOfChange ) { /* book 
             currentStatus = "Yes";
         }
         db.collection('books').doc(book.id).update( { readStatus: currentStatus } );
-        console.log(currentStatus);
     }
 }
 
@@ -74,7 +72,6 @@ function getAnImage( book ) {
             aMatch = aMatch[0];
             aMatch = aMatch.split("src=\"");
             aMatch = aMatch[1];
-            console.log(aMatch);
             aMatch = aMatch.split("");
             aMatch.pop();
             let returnedUrl = aMatch.join("");
